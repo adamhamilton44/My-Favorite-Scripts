@@ -1,0 +1,27 @@
+#!/bin/bash
+
+function getip(){
+  echo -en "External\t"
+  dig -4 @resolver1.opendns.com ANY myip.opendns.com +short
+
+  ip add|grep BROADCAST|cut -d\  -f2|cut -d\: -f1|while read d
+do 
+  echo -en "$d \t";
+  ip addr show $d|\
+    grep "inet "|\
+    awk '{print $2}'|\
+    cut -d\/ -f1;
+  done
+}
+
+function getESSID(){
+  let count="$(iwconfig 2>/dev/null|grep ESSID|wc -l)"
+  if [ "$count" -gt 0 ];then
+    echo -e "\n\nCurrently connected to:"
+    echo -e "\t$(iwconfig 2>/dev/null|grep ESSID)"
+  fi
+}
+
+getip|column -t
+getESSID
+

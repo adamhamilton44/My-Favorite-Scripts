@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [[ $1 == "" ]]; then
+	echo "Usage $0 New Bash Script Name."
+	exit
+fi
+
+touch $1 && chmod 777 $1 && nano $1

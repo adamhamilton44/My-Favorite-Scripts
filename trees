@@ -1,0 +1,7 @@
+#!/bin/bash
+
+[ $1 ] &&
+tree -L "$1" -C -A ./ ||
+echo "Usage $0 file depth" && exit
+
+

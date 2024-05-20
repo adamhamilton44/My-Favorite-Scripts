@@ -1,0 +1,58 @@
+#!/bin/bash
+
+source $(dirname $0)/ipinfo2.sh
+main(){
+    window "`hostname`" "blue" "15%"
+	append "Local IP"
+    	append "`ip a | grep inet | grep "192" | awk '{print $2}'`" 2
+    endwin
+    window "Calendar" "cyan" "15%"
+        addsep
+        append_command "date"
+        addsep
+	append_command "cal"
+    endwin
+    col_right
+    col_right
+curl -s http://ip-api.com/ | tr {} " " > ip.txt 2>&1
+    move_up
+    window "Public IP Information" "green" "40%"
+        append "`cat ./ip.txt | tr -d '"' | awk '{print $1" "$3}' | grep query `\""
+	append "`cat ./ip.txt | tr -d '"' | awk '{print $1" "$3" "$4" "$5" "$6}' | grep isp `\""
+	append "`cat ./ip.txt | tr -d '"' | awk '{print $1" "$3" "$4}' | grep city `\""
+	append "`cat ./ip.txt | tr -d '"' | awk '{print $1" "$3}' | grep regionName `\""
+	append "`cat ./ip.txt | tr -d '"' | awk '{print $1" "$3}' | grep zip `\""
+	append "`cat ./ip.txt | tr -d '"' | awk '{print $1" "$3}' | grep lat `\""
+	append "`cat ./ip.txt | tr -d '"' | awk '{print $1" "$3}' | grep lon `\""
+    endwin
+    window "Outside IP Connections" "red" "40%"
+	append "`netstat -atn | grep ESTABLISHED | awk '{print $5}' | cut -d: -f1`"
+    endwin
+    col_right
+    move_up
+curl -s https://wttr.in/Iowa?format=j1 | tr ":" " " > wttr.txt 2>&1
+    window "Current Weather" "yellow" "15%" 2
+        append "Temp":"`grep temp_F wttr.txt | awk '{print $2}'`"
+	addsep
+	append "Wind Speed":"`grep windspeedMiles -m 1 wttr.txt | awk '{print $2}'`"
+	addsep
+	append "Wind Direction":"`grep winddir16Point -m 1 wttr.txt | awk '{print $2}'`"
+	addsep
+	append "Looks":"`grep value -m 1 wttr.txt | awk '{print $2 $3}'`"
+	addsep
+	append "humidity":"`grep humidity -m 1 wttr.txt | awk '{print $2}'`"
+	addsep
+	append "Rain Amount":"`grep precipInches -m 1 wttr.txt | awk '{print $2}'`"
+	addsep
+	append "UV Index":"`grep uvIndex -m 1 wttr.txt | awk '{print $2}'`"
+    endwin
+}
+main_loop -t 5.0 "$@"
+
+#    window "Files in Current Direcrory" "green" "15%"
+#        if [[ -x `which tree 2> /dev/null` ]]; then
+#            append_command "tree -L 2 -C -A ./"
+#        else
+#            append "Please install tree command"
+#        fi
+#    endwin

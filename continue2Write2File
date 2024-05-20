@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+echo "Enter text (type '11223' to exit):"
+read -r -p "Enter a name for the txt file i need to copy info to." fn
+if ! [ -f "$fn.txt" ]; then
+	touch $fn.txt
+else
+	echo "Warning !! File Already exist. Append input?"
+	echo "If you dont want to append then CTRL+c to exit, else we will only append, not over write."
+	read -p "Press enter/return when ready"
+fi
+echo -e "I am ready All you need to do is copy/paste to me and enter/return key per line, i will record in the $fn.txt file"
+while :
+do
+	read input
+	if [ "$input" == "11223" ]; then
+		echo "GoodBye"
+		break
+	else
+		echo "$input" >> $fn.txt
+	fi
+done
+
+echo -e "Contents written to $fn.txt"
+

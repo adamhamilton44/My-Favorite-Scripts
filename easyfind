@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+# Start directory Add your own starting directory EXP: P="/home/user/Documents"
+# if starting directory is "/" then you should be root
+P="/home/adam/Documents"
+
+# Function to show files and directories with type indication
+show_items() {
+  ls -lA "$1" | awk '
+  BEGIN {print "[D] .."}
+  $1 ~ /^d/ {print "[D] " $9}
+  $1 ~ /^-/ {print "[F] " $9}
+  '
+}
+
+while true; do
+  # List directories and files and allow the user to select one
+  selection=$(show_items "$P" | fzf --prompt "Select a Directory or File: ")
+
+  # Remove the type indicator ([D] or [F])
+  item=$(echo "$selection" | awk '{print $2}')
+
+  # If the user selected a directory, navigate into it
+  if [[ "$selection" == "[D] .." ]]; then
+    P=$(dirname "$P")  # Navigate up one level
+  elif [[ "$selection" == "[D] "* ]]; then
+    P="$P/$item"  # Navigate into the selected directory
+  elif [[ "$selection" == "[F] "* ]]; then
+    nano "$P/$item"  # Open the selected file in nano/change to your terminal
+    exit 0
+  else
+    echo "Invalid selection. Exiting."
+    exit 1
+  fi
+done
