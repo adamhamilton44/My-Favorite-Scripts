@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+find_jq() {
+if ! [ -x "$(command -v jq)" ]; then
+  echo 'Error: jq is not installed. Install via https://stedolan.github.io/jq/download/'
+  exit 1
+fi
+}
+
+get_ips() {
+if [[ $# -ne 1 ]]; then
+	echo 'Provide I.P address'
+	read Ip
+fi
+link=$(echo "http://ip-api.com/json/"$Ip)
+data=$(curl $link -s) # -s for slient output
+
+status=$(echo $data | jq '.status' -r)
+
+if [[ $status == "success" ]]; then
+
+	city=$(echo $data | jq '.city' -r)
+	regionName=$(echo $data | jq '.regionName' -r)
+	country=$( echo $data | jq '.country' -r)
+	echo $city, $regionName in $country.
+fi
+}
+
+find_jq
+get_ips
